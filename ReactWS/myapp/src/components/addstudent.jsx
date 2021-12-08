@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { Component } from "react";
+import Joi from "joi-browser";
 
 class AddStudent extends React.Component {
   state = {
@@ -10,6 +11,38 @@ class AddStudent extends React.Component {
       role: "",
       contactNo: "",
     },
+    errors: {},
+    errMsg: "",
+  };
+  // define schema to validate input field values
+  schema = {
+    fullName: Joi.string().min(3).max(20).required(),
+    email: Joi.string()
+      .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+      .required(),
+    password: Joi.string().min(3).required(),
+    contactNo: Joi.number()
+      .integer()
+      .min(9999999900)
+      .max(9999999999)
+      .required(),
+    role: Joi.string().required(),
+  };
+  // Step 3: Validate user input with schema
+  validate = () => {
+    const errors = {};
+    const result = Joi.validate(this.state.student, this.schema, {
+      abortEarly: false,
+    });
+    console.log(result);
+    // setting error messages to error properties
+    // ex: errors[username] = "username is required";
+    // ex: errors[password] = "password is required";
+    if (result.error != null)
+      for (let item of result.error.details) {
+        errors[item.path[0]] = item.message;
+      }
+    return Object.keys(errors).length === 0 ? null : errors;
   };
   handleChange = (event) => {
     //logic to update state object
@@ -33,6 +66,9 @@ class AddStudent extends React.Component {
     event.preventDefault();
     console.log("handleSubmit");
     // Send post request to rest api
+    this.setState({ errors: this.validate() });
+    console.log(this.state.errors);
+    if (this.state.errors) return;
     axios
       .post("http://localhost:8082/students", this.state.student)
       .then((res) => {
@@ -42,17 +78,28 @@ class AddStudent extends React.Component {
         );
         this.props.history.push("/students");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        console.log(err.response.data.message);
+        this.setState({ errMsg: err.response.data.message });
+      });
   };
 
   render() {
     // Object Destructuring
     const { fullName, email, password, role, contactNo } = this.state.student;
+    const { errors, errMsg } = this.state;
     return (
-      <div>
+      <div className="w-50 mx-auto ">
+        <h3>Add Student</h3>
+        {errMsg && (
+          <div className="alert alert-danger" role="alert">
+            {errMsg}
+          </div>
+        )}
         <form
           onSubmit={this.handleSubmit}
-          className="w-50 mx-auto shadow p-3 mb-5 bg-body rounded mt-3"
+          className="shadow p-3 mb-5 bg-body rounded mt-3"
         >
           <div className="mb-3">
             <label htmlFor="fullName" className="form-label">
@@ -67,6 +114,7 @@ class AddStudent extends React.Component {
               name="fullName"
               onChange={this.handleChange}
             />
+            {errors && <small>{errors.fullName}</small>}
           </div>
           <div className="mb-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
@@ -81,6 +129,7 @@ class AddStudent extends React.Component {
               name="email"
               onChange={this.handleChange}
             />
+            {errors && <small>{errors.email}</small>}
           </div>
           <div className="mb-3">
             <label htmlFor="exampleInputPassword1" className="form-label">
@@ -94,6 +143,7 @@ class AddStudent extends React.Component {
               name="password"
               onChange={this.handleChange}
             />
+            {errors && <small>{errors.password}</small>}
           </div>
           <div className="mb-3">
             <label htmlFor="contactNo" className="form-label">
@@ -108,6 +158,7 @@ class AddStudent extends React.Component {
               name="contactNo"
               onChange={this.handleChange}
             />
+            {errors && <small>{errors.contactNo}</small>}
           </div>
           <select
             className="form-select text-center"
@@ -120,6 +171,7 @@ class AddStudent extends React.Component {
             <option value="admin">Admin</option>
             <option value="student">Student</option>
           </select>
+          {errors && <small>{errors.role}</small>}
           <div className="d-grid gap-2 mt-3">
             <button type="submit" className="btn btn-primary">
               Submit

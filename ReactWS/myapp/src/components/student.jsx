@@ -58,7 +58,7 @@ class Student extends React.Component {
           </thead>
           <tbody>
             {this.state.students.map((s) => (
-              <tr>
+              <tr key={s.rollNo}>
                 <td>{s.rollNo}</td>
                 <td>{s.fullName}</td>
                 <td>{s.login.email}</td>
