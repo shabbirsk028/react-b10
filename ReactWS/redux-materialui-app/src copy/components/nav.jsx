@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Button from "@mui/material/Button";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -7,14 +7,10 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import Badge from "@mui/material/Badge";
 
 import { NavLink } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 
 const Nav = () => {
-  const count = useSelector((state) => state.count);
-  console.log(count);
   return (
     <div>
       <Box sx={{ flexGrow: 1 }}>
@@ -42,9 +38,7 @@ const Nav = () => {
               Logout
             </Button>
             <IconButton aria-label="cart" component={NavLink} to="/cart">
-              <Badge badgeContent={count}>
-                <ShoppingCartIcon />
-              </Badge>
+              <ShoppingCartIcon />
             </IconButton>
           </Toolbar>
         </AppBar>

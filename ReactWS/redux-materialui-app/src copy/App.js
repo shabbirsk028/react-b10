@@ -10,7 +10,6 @@ import AddStudent from "./components/addstudent";
 import Cart from "./components/cart";
 import Logout from "./components/logout";
 import PageNotFound from "./components/pagenotfound";
-import Counter from "./components/counter";
 
 import "bootstrap/dist/css/bootstrap.css";
 
@@ -26,7 +25,6 @@ function App() {
         <Route path="/students/update/:rollNo" component={UpdateStudent} />
         <Route path="/students/add" component={AddStudent} />
         <Route path="/students" component={Student} />
-        <Route path="/counter" component={Counter} />
         <Route path="/logout" component={Logout} />
         <Redirect exact path="/" to="/home" />
         <Route component={PageNotFound} />
