@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 const Nav = () => {
   const count = useSelector((state) => state.count);
+  const login = useSelector((state) => state.login);
   console.log(count);
   return (
     <div>
@@ -35,15 +36,20 @@ const Nav = () => {
             >
               Products
             </Button>
-            <Button color="inherit" component={NavLink} to="/login">
-              Login
-            </Button>
+            {login.loggedIn ? (
+              <Button to="/logout" component={NavLink} color="inherit">
+                Logout
+              </Button>
+            ) : (
+              <Button color="inherit" component={NavLink} to="/login">
+                Login
+              </Button>
+            )}
+
             <Button color="inherit" component={NavLink} to="/register">
               Register
             </Button>
-            <Button to="/logout" component={NavLink} color="inherit">
-              Logout
-            </Button>
+
             <IconButton aria-label="cart" component={NavLink} to="/cart">
               <Badge badgeContent={count}>
                 <ShoppingCartIcon />

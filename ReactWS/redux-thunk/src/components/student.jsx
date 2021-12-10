@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import StudentTable from "./studenttable";
+import { connect } from "react-redux";
 
 class Student extends React.Component {
   state = {
@@ -42,9 +43,11 @@ class Student extends React.Component {
   render() {
     return (
       <div className="w-75 mx-auto">
-        <Link to="/students/add" className="btn btn-info float-end">
-          Add
-        </Link>
+        {this.props.login.loggedIn && this.props.login.role == "admin" && (
+          <Link to="/students/add" className="btn btn-info float-end">
+            Add
+          </Link>
+        )}
         <StudentTable
           students={this.state.students}
           handleDelete={this.handleDelete}
@@ -54,4 +57,11 @@ class Student extends React.Component {
   }
 }
 
-export default Student;
+// funtion to get updates from store
+const mapStateToProps = (state) => {
+  return {
+    login: state.login,
+  };
+};
+
+export default connect(mapStateToProps)(Student);

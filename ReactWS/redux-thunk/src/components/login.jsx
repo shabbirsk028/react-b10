@@ -2,6 +2,9 @@ import React, { Component } from "react";
 //import TextField from "@mui/material/TextField";
 //import Box from "@mui/material/Box";
 
+import { connect } from "react-redux";
+import { loginAction } from "../actions/loginaction";
+
 import {
   TextField,
   Box,
@@ -15,6 +18,29 @@ import {
 } from "@mui/material";
 
 class Login extends React.Component {
+  state = {
+    user: {
+      email: "",
+      password: "",
+      role: "",
+    },
+  };
+  handleChange = (event) => {
+    const usr = { ...this.state.user };
+    usr[event.target.name] = event.target.value;
+    this.setState({ user: usr });
+  };
+  handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("handleSubmit");
+    // dispatch login action
+    this.props.loginAction(this.state.user);
+
+    // Redirect to products page on successfull login
+    if (this.props.login.loggedIn) {
+      this.props.history.push("/products");
+    }
+  };
   render() {
     return (
       <div
@@ -27,7 +53,12 @@ class Login extends React.Component {
       >
         <Typography variant="h5">Login Form</Typography>
         <Paper elevation={3}>
-          <Box component="form" noValidate autoComplete="off" padding={2}>
+          <form
+            onSubmit={this.handleSubmit}
+            noValidate
+            autoComplete="off"
+            padding={2}
+          >
             <TextField
               id="filled-basic"
               label="Email"
@@ -35,6 +66,9 @@ class Login extends React.Component {
               type="email"
               style={{ marginBottom: 10 }}
               fullWidth
+              value={this.state.email}
+              name="email"
+              onChange={this.handleChange}
             />
             <TextField
               id="filled-basic"
@@ -43,12 +77,18 @@ class Login extends React.Component {
               type="password"
               fullWidth
               style={{ marginBottom: 10 }}
+              value={this.state.password}
+              name="password"
+              onChange={this.handleChange}
             />
             <FormControl variant="filled" fullWidth>
               <InputLabel id="demo-simple-select-filled-label">Role</InputLabel>
               <Select
                 labelId="demo-simple-select-filled-label"
                 id="demo-simple-select-filled"
+                value={this.state.role}
+                name="role"
+                onChange={this.handleChange}
               >
                 <MenuItem value="">
                   <em>None</em>
@@ -58,14 +98,33 @@ class Login extends React.Component {
                 <MenuItem value="admin">Admin</MenuItem>
               </Select>
             </FormControl>
-            <Button variant="contained" fullWidth style={{ marginTop: "10px" }}>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              style={{ marginTop: "10px" }}
+            >
               Submit
             </Button>
-          </Box>
+          </form>
         </Paper>
       </div>
     );
   }
 }
 
-export default Login;
+// funtion to get updates from store
+const mapStateToProps = (state) => {
+  return {
+    login: state.login,
+  };
+};
+
+// function to dispatch actions
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loginAction,
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps())(Login);

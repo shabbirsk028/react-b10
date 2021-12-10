@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 
 class StudentTable extends React.Component {
   render() {
@@ -14,7 +15,8 @@ class StudentTable extends React.Component {
               <th>Email</th>
               <th>Contact No</th>
               <th>Role</th>
-              <th>Actions</th>
+              {this.props.login.loggedIn &&
+                this.props.login.role == "admin" && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
@@ -25,20 +27,22 @@ class StudentTable extends React.Component {
                 <td>{s.login.email}</td>
                 <td>{s.contactNo}</td>
                 <td>{s.login.role}</td>
-                <td>
-                  <Link
-                    to={`/students/update/${s.rollNo}`}
-                    className="btn btn-primary"
-                  >
-                    Update
-                  </Link>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => handleDelete(s.rollNo)}
-                  >
-                    Delete
-                  </button>
-                </td>
+                {this.props.login.loggedIn && this.props.login.role == "admin" && (
+                  <td>
+                    <Link
+                      to={`/students/update/${s.rollNo}`}
+                      className="btn btn-primary"
+                    >
+                      Update
+                    </Link>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDelete(s.rollNo)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -47,5 +51,11 @@ class StudentTable extends React.Component {
     );
   }
 }
+// funtion to get updates from store
+const mapStateToProps = (state) => {
+  return {
+    login: state.login,
+  };
+};
 
-export default StudentTable;
+export default connect(mapStateToProps)(StudentTable);
